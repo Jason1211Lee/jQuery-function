@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的 GitHub 個人頁</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;background:#f7f7f7;color:#222}
+    header,footer{padding:16px 20px;background:#e9eef5}
+    main{max-width:920px;margin:20px auto;padding:0 16px}
+    .btn{padding:8px 12px;border:1px solid #888;border-radius:8px;background:#fff;cursor:pointer}
+    .card{background:#fff;border:1px solid #ddd;border-radius:12px;padding:16px;margin-top:16px}
+    body.dark{background:#0f1115;color:#eaeaea}
+    body.dark header, body.dark footer{background:#1a1f29}
+    a{color:inherit}
+    #more{display:none}
+    .post{border-top:1px dashed #ccc;padding-top:12px;margin-top:12px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>我的 GitHub 個人頁</h1>
+    <button id="toggle" class="btn" aria-pressed="false">切換暗色</button>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>關於我</h2>
+      <p>嗨！這是一個示範頁，下面有 jQuery 的互動功能。</p>
+      <p><a href="#" id="moreLink">更多介紹</a></p>
+      <div id="more">我平常會寫一點程式、做專題、和整理學習筆記。🙂</div>
+    </section>
+
+    <section class="card">
+      <h2>文章列表（Ajax 載入）</h2>
+      <button id="load" class="btn">載入 3 篇文章</button>
+      <div id="posts" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>© <span id="y"></span> My Page · 用 GitHub Pages 發佈</footer>
+
+  <!-- jQuery CDN（要放在自訂腳本前） -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script>
+    // 年份
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // jQuery：主題切換（DOM + 事件）
+    $(function(){
+      $('#toggle').on('click', function(){
+        $('body').toggleClass('dark');
+        $(this).attr('aria-pressed', $('body').hasClass('dark'));
+      });
+    });
+
+    // jQuery：展開/收合（動畫）
+    $('#moreLink').on('click', function(e){
+      e.preventDefault();
+      $('#more').slideToggle();
+    });
+
+    // jQuery：Ajax 載入 JSON 並渲染
+    $('#load').on('click', function(){
+      $('#posts').text('載入中…');
+      $.getJSON('https://jsonplaceholder.typicode.com/posts?_limit=3', function(data){
+        const $wrap = $('<div/>');
+        data.forEach(p => {
+          $wrap.append(`<article class="post"><h3>${p.title}</h3><p>${p.body}</p></article>`);
+        });
+        $('#posts').empty().append($wrap);
+      }).fail(() => $('#posts').text('載入失敗，請稍後再試。'));
+    });
+  </script>
+</body>
+</html>
